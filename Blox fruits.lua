@@ -1,248 +1,320 @@
 --[[
-    Blox Fruits Auto Farm Script - Mesclado (Primeiro, Segundo e Terceiro Mar)
-    Inclui: Nome da Missão, NPC, CFrame, Nome da Ilha, Nome do Monstro
-    Script educacional!
-]]
+BLOX FRUITS MOBILE - SCRIPT OP ALL-IN-ONE
+By Copilot (2024)
+Compatível com Delta Mobile, Hydrogen, Arceus X, Codex, etc
+]]--
 
-local Quests = {
-    -- FORMATO:
-    --[nivel] = {
-    --      sea = <1/2/3>,
-    --      questName = "Nome da Missão",
-    --      npcName = "Nome do NPC",
-    --      npcCFrame = CFrame.new(x, y, z),
-    --      islandName = "Nome da Ilha",
-    --      monsterName = "Nome do Monstro",
-    --      monsterCFrame = CFrame.new(x, y, z)
-    -- }
-    -- ===== PRIMEIRO MAR =====
-    [1] = {sea=1, questName="BanditQuest1", npcName="Bandit Quest Giver", npcCFrame=CFrame.new(1060,16,1548), islandName="Starter Island", monsterName="Bandit", monsterCFrame=CFrame.new(1199,52,1536)},
-    [15] = {sea=1, questName="MonkeyQuest", npcName="Adventurer", npcCFrame=CFrame.new(-1603,36,153), islandName="Jungle", monsterName="Monkey", monsterCFrame=CFrame.new(-1462,39,110)},
-    [20] = {sea=1, questName="GorillaQuest", npcName="Adventurer", npcCFrame=CFrame.new(-1603,36,153), islandName="Jungle", monsterName="Gorilla", monsterCFrame=CFrame.new(-1328,62,-530)},
-    [30] = {sea=1, questName="BuggyQuest1", npcName="Pirate Quest Giver", npcCFrame=CFrame.new(-1140,5,3827), islandName="Pirate Village", monsterName="Pirate", monsterCFrame=CFrame.new(-1122,5,3936)},
-    [40] = {sea=1, questName="BuggyQuest2", npcName="Pirate Quest Giver", npcCFrame=CFrame.new(-1140,5,3827), islandName="Pirate Village", monsterName="Brute", monsterCFrame=CFrame.new(-1215,5,4337)},
-    [60] = {sea=1, questName="DesertQuest1", npcName="Desert Adventurer", npcCFrame=CFrame.new(932,7,4484), islandName="Desert", monsterName="Desert Bandit", monsterCFrame=CFrame.new(932,7,4484)},
-    [75] = {sea=1, questName="DesertQuest2", npcName="Desert Adventurer", npcCFrame=CFrame.new(932,7,4484), islandName="Desert", monsterName="Desert Officer", monsterCFrame=CFrame.new(1572,10,4410)},
-    [90] = {sea=1, questName="SnowQuest1", npcName="Snow Quest Giver", npcCFrame=CFrame.new(1387,87,-1295), islandName="Frozen Village", monsterName="Snow Bandit", monsterCFrame=CFrame.new(1347,88,-1379)},
-    [105] = {sea=1, questName="SnowQuest2", npcName="Snow Quest Giver", npcCFrame=CFrame.new(1387,87,-1295), islandName="Frozen Village", monsterName="Snowman", monsterCFrame=CFrame.new(1175,90,-1449)},
-    [120] = {sea=1, questName="MarineQuest2", npcName="Marine Leader", npcCFrame=CFrame.new(-4505,20,4260), islandName="Marine Fortress", monsterName="Petty Officer", monsterCFrame=CFrame.new(-4855,22,4328)},
-    [130] = {sea=1, questName="SkyQuest1", npcName="TheMole", npcCFrame=CFrame.new(-4842,718,-2625), islandName="Skylands", monsterName="Sky Bandit", monsterCFrame=CFrame.new(-4956,295,-2900)},
-    [145] = {sea=1, questName="SkyQuest2", npcName="TheMole", npcCFrame=CFrame.new(-4842,718,-2625), islandName="Skylands", monsterName="Dark Master", monsterCFrame=CFrame.new(-5253,389,-2272)},
-    [150] = {sea=1, questName="PrisonerQuest1", npcName="Prisoner Quest Giver", npcCFrame=CFrame.new(5305,2,474), islandName="Prison", monsterName="Prisoner", monsterCFrame=CFrame.new(5206,96,604)},
-    [190] = {sea=1, questName="MagmaQuest1", npcName="Magma Admiral", npcCFrame=CFrame.new(-5328,16,-5296), islandName="Magma Village", monsterName="Military Soldier", monsterCFrame=CFrame.new(-5398,76,-5895)},
-    [200] = {sea=1, questName="MagmaQuest2", npcName="Magma Admiral", npcCFrame=CFrame.new(-5328,16,-5296), islandName="Magma Village", monsterName="Military Spy", monsterCFrame=CFrame.new(-5786,76,-5837)},
-    [225] = {sea=1, questName="FishmanQuest1", npcName="Fishman Quest Giver", npcCFrame=CFrame.new(61122,19,1569), islandName="Underwater City", monsterName="Fishman Warrior", monsterCFrame=CFrame.new(60922,19,1546)},
-    [250] = {sea=1, questName="FishmanQuest2", npcName="Fishman Quest Giver", npcCFrame=CFrame.new(61122,19,1569), islandName="Underwater City", monsterName="Fishman Commando", monsterCFrame=CFrame.new(61872,19,1496)},
-    [300] = {sea=1, questName="SkyExp1Quest", npcName="God's Guard Quest Giver", npcCFrame=CFrame.new(-7895,5546,-380), islandName="Upper Skylands", monsterName="God's Guard", monsterCFrame=CFrame.new(-7855,5636,-524)},
-    -- ===== SEGUNDO MAR =====
-    [700] = {sea=2, questName="Area1Quest1", npcName="Raider Quest Giver", npcCFrame=CFrame.new(-429,5606,238), islandName="Kingdom of Rose", monsterName="Raider", monsterCFrame=CFrame.new(-746,5606,273)},
-    [725] = {sea=2, questName="Area1Quest2", npcName="Raider Quest Giver", npcCFrame=CFrame.new(-429,5606,238), islandName="Kingdom of Rose", monsterName="Mercenary", monsterCFrame=CFrame.new(-874,5606,395)},
-    [775] = {sea=2, questName="Area2Quest1", npcName="Swan Pirate Quest Giver", npcCFrame=CFrame.new(634,873,384), islandName="Kingdom of Rose", monsterName="Swan Pirate", monsterCFrame=CFrame.new(877,1227,230)},
-    [800] = {sea=2, questName="Area2Quest2", npcName="Swan Pirate Quest Giver", npcCFrame=CFrame.new(634,873,384), islandName="Kingdom of Rose", monsterName="Factory Staff", monsterCFrame=CFrame.new(295,73,-56)},
-    [850] = {sea=2, questName="MarineQuest3", npcName="Marine Quest Giver", npcCFrame=CFrame.new(-2440,73,-3217), islandName="Green Zone", monsterName="Marine Lieutenant", monsterCFrame=CFrame.new(-2440,73,-3217)},
-    [925] = {sea=2, questName="GorillaQuest", npcName="Kong Quest Giver", npcCFrame=CFrame.new(-1329,331,490), islandName="Green Zone", monsterName="Kong", monsterCFrame=CFrame.new(-1329,331,490)},
-    [1000] = {sea=2, questName="ZombieQuest1", npcName="Zombie Quest Giver", npcCFrame=CFrame.new(-5536,342,8445), islandName="Haunted Castle", monsterName="Zombie", monsterCFrame=CFrame.new(-5536,342,8445)},
-    [1100] = {sea=2, questName="ShipEngineerQuest", npcName="Ship Engineer", npcCFrame=CFrame.new(-6524,8,-132), islandName="Hot and Cold", monsterName="Lab Subordinate", monsterCFrame=CFrame.new(-5788,16,-154)},
-    -- ===== TERCEIRO MAR =====
-    [1500] = {sea=3, questName="PiratePortQuest", npcName="Pirate Port Quest Giver", npcCFrame=CFrame.new(-287,44,5576), islandName="Pirate Port", monsterName="Pirate Millionaire", monsterCFrame=CFrame.new(-217,44,5785)},
-    [1575] = {sea=3, questName="GreatTreeQuest", npcName="Great Tree Quest Giver", npcCFrame=CFrame.new(2347,25,-6458), islandName="Great Tree", monsterName="Marine Commodore", monsterCFrame=CFrame.new(2445,25,-6700)},
-    [1700] = {sea=3, questName="CastleQuest", npcName="Castle Quest Giver", npcCFrame=CFrame.new(-5488,313,8477), islandName="Haunted Castle", monsterName="Reborn Skeleton", monsterCFrame=CFrame.new(-5398,313,8789)},
-    [1800] = {sea=3, questName="HydraIslandQuest", npcName="Hydra Island Quest Giver", npcCFrame=CFrame.new(5225,604,345), islandName="Hydra Island", monsterName="Island Empress", monsterCFrame=CFrame.new(5690,611,244)},
-    [1975] = {sea=3, questName="FloatingTurtleQuest", npcName="Floating Turtle Quest Giver", npcCFrame=CFrame.new(-10579,331, -8752), islandName="Floating Turtle", monsterName="Fishman Raider", monsterCFrame=CFrame.new(-10994,331,-8945)},
-    [2075] = {sea=3, questName="MansionQuest", npcName="Mansion Quest Giver", npcCFrame=CFrame.new(-12495,332,3742), islandName="Mansion", monsterName="Forest Pirate", monsterCFrame=CFrame.new(-13003,332,4022)},
-    -- Adicione mais quests conforme necessário!
-}
+-- Proteção anti-crash
+pcall(function() game:GetService("CoreGui")["BF_OP_GUI"]:Destroy() end)
 
-local Islands = {
-    [1] = {
-        ["Starter Island"] = CFrame.new(1050, 16, 1547),
-        ["Jungle"] = CFrame.new(-1601, 36, 153),
-        ["Pirate Village"] = CFrame.new(-1140, 5, 3827),
-        ["Desert"] = CFrame.new(932, 7, 4484),
-        ["Frozen Village"] = CFrame.new(1387, 87, -1295),
-        ["Marine Fortress"] = CFrame.new(-4505, 20, 4260),
-        ["Skylands"] = CFrame.new(-4842, 718, -2625),
-        ["Prison"] = CFrame.new(5305, 2, 474),
-        ["Magma Village"] = CFrame.new(-5328, 16, -5296),
-        ["Underwater City"] = CFrame.new(61122, 19, 1569),
-        ["Upper Skylands"] = CFrame.new(-7895,5546,-380),
-    },
-    [2] = {
-        ["Kingdom of Rose"] = CFrame.new(-429,5606,238),
-        ["Green Zone"] = CFrame.new(-2440,73,-3217),
-        ["Haunted Castle"] = CFrame.new(-5536,342,8445),
-        ["Hot and Cold"] = CFrame.new(-5788,16,-154),
-        -- Adicione mais ilhas do Segundo Mar
-    },
-    [3] = {
-        ["Pirate Port"] = CFrame.new(-287,44,5576),
-        ["Great Tree"] = CFrame.new(2347,25,-6458),
-        ["Haunted Castle"] = CFrame.new(-5488,313,8477),
-        ["Hydra Island"] = CFrame.new(5225,604,345),
-        ["Floating Turtle"] = CFrame.new(-10579,331, -8752),
-        ["Mansion"] = CFrame.new(-12495,332,3742),
-        -- Adicione mais ilhas do Terceiro Mar
+local plr = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Replicated = game:GetService("ReplicatedStorage")
+local ws = game:GetService("Workspace")
+
+-- GUI PRINCIPAL
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "BF_OP_GUI"
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,270,0,485)
+frame.Position = UDim2.new(0,10,0,130)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,40)
+frame.Active = true
+frame.Draggable = true
+
+local function makeBtn(txt, y)
+    local b = Instance.new("TextButton")
+    b.Parent = frame
+    b.Size = UDim2.new(0,240,0,34)
+    b.Position = UDim2.new(0,15,0,y)
+    b.BackgroundColor3 = Color3.fromRGB(44,44,54)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.SourceSansBold
+    b.TextSize = 16
+    b.Text = txt
+    return b
+end
+
+local btnAutoFarm = makeBtn("Auto Farm: OFF",10)
+local btnAutoQuest = makeBtn("Auto Quest: OFF",54)
+local btnAutoStats = makeBtn("Auto Stats: OFF",98)
+local btnBuso = makeBtn("Auto Buso Haki: OFF",142)
+local btnTP = makeBtn("Teleport GUI",186)
+local btnSpeed = makeBtn("Speed Hack: OFF",230)
+local btnFPS = makeBtn("FPS Boost",274)
+local btnSafe = makeBtn("Safe Mode: OFF",318)
+local lblstatus = Instance.new("TextLabel", frame)
+lblstatus.Size = UDim2.new(0,240,0,32)
+lblstatus.Position = UDim2.new(0,15,0,370)
+lblstatus.BackgroundTransparency = 1
+lblstatus.Text = "Blox Fruits Mobile Script - Copilot"
+lblstatus.TextColor3 = Color3.new(1,1,1)
+lblstatus.Font = Enum.Font.SourceSansBold
+lblstatus.TextSize = 14
+
+-- ESTADOS
+local autoFarm, autoQuest, autoStats, autoBuso, speedHack, safeMode = false, false, false, false, false, false
+
+-- FUNÇÕES OP
+
+-- FPS BOOST
+btnFPS.MouseButton1Click:Connect(function()
+    setfpscap = setfpscap or function() end
+    setfpscap(30)
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("BasePart") or v:IsA("Decal") then pcall(function() v.Material = Enum.Material.SmoothPlastic v.Reflectance = 0 end) end
+        if v:IsA("ParticleEmitter") or v:IsA("Trail") then v.Enabled = false end
+    end
+    game:GetService("Lighting").FogEnd = 1e10
+    game:GetService("Lighting").Brightness = 1
+    game:GetService("Lighting").GlobalShadows = false
+    game:GetService("Lighting").ClockTime = 14
+    lblstatus.Text = "FPS Boost Ativado!"
+end)
+
+-- SPEED HACK
+btnSpeed.MouseButton1Click:Connect(function()
+    speedHack = not speedHack
+    btnSpeed.Text = "Speed Hack: " .. (speedHack and "ON" or "OFF")
+    if speedHack then
+        plr.Character.Humanoid.WalkSpeed = 120
+    else
+        plr.Character.Humanoid.WalkSpeed = 16
+    end
+end)
+
+-- SAFE MODE
+btnSafe.MouseButton1Click:Connect(function()
+    safeMode = not safeMode
+    btnSafe.Text = "Safe Mode: " .. (safeMode and "ON" or "OFF")
+end)
+
+-- AUTO BUSO HAKI
+btnBuso.MouseButton1Click:Connect(function()
+    autoBuso = not autoBuso
+    btnBuso.Text = "Auto Buso Haki: " .. (autoBuso and "ON" or "OFF")
+end)
+
+-- AUTO STATS
+btnAutoStats.MouseButton1Click:Connect(function()
+    autoStats = not autoStats
+    btnAutoStats.Text = "Auto Stats: " .. (autoStats and "ON" or "OFF")
+end)
+
+-- AUTO QUEST
+btnAutoQuest.MouseButton1Click:Connect(function()
+    autoQuest = not autoQuest
+    btnAutoQuest.Text = "Auto Quest: " .. (autoQuest and "ON" or "OFF")
+end)
+
+-- AUTO FARM
+btnAutoFarm.MouseButton1Click:Connect(function()
+    autoFarm = not autoFarm
+    btnAutoFarm.Text = "Auto Farm: " .. (autoFarm and "ON" or "OFF")
+end)
+
+-- TELEPORT GUI
+btnTP.MouseButton1Click:Connect(function()
+    local tpGui = Instance.new("Frame",gui)
+    tpGui.Size = UDim2.new(0,210,0,310)
+    tpGui.Position = UDim2.new(0,300,0,140)
+    tpGui.BackgroundColor3 = Color3.fromRGB(45,45,55)
+    tpGui.Draggable = true
+    tpGui.Active = true
+    tpGui.Name = "TPFRAME"
+    local places = {
+        {"Starter Island",Vector3.new(-260, 7, 388)}, {"Jungle",Vector3.new(-1337, 11, 495)}, 
+        {"Pirate Village",Vector3.new(-1122, 5, 3877)}, {"Desert",Vector3.new(1094, 15, 4192)},
+        {"Middle",Vector3.new(-521, 8, 4168)}, {"Sky",Vector3.new(-4956, 295, -2847)},
+        {"Frozen Village",Vector3.new(1122, 7, -1426)}, {"Marine Ford",Vector3.new(-4505, 20, 4260)},
+        {"Colosseum",Vector3.new(-1428, 7, -3014)}, {"Prison",Vector3.new(5278, 38, 474)},
+        {"Magma",Vector3.new(-5585, 15, 8027)}, {"Underwater",Vector3.new(61163, 5, 1569)},
+        {"Fountain City",Vector3.new(5251, 38, 4012)}
     }
-}
-
--- Resto do script do Auto Farm...
-
--- GUI Setup (igual ao exemplo anterior)
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AutoFarmBloxFruits"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.CoreGui
-
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 350, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
-MainFrame.BackgroundColor3 = Color3.fromRGB(90, 0, 130)
-MainFrame.BackgroundTransparency = 0.35
-MainFrame.BorderSizePixel = 0
-
--- Floating Icon
-local Icon = Instance.new("Frame", ScreenGui)
-Icon.Size = UDim2.new(0, 50, 0, 50)
-Icon.Position = UDim2.new(0.05, 0, 0.05, 0)
-Icon.BackgroundColor3 = Color3.fromRGB(90, 0, 130)
-Icon.BackgroundTransparency = 0.5
-Icon.BorderSizePixel = 0
-
--- Spinner para armas
-local WeaponTypes = {"Melee", "Sword", "Gun", "Blox Fruit"}
-local SelectedWeapon = WeaponTypes[1]
-local WeaponDrop = Instance.new("TextButton", MainFrame)
-WeaponDrop.Size = UDim2.new(0, 150, 0, 30)
-WeaponDrop.Position = UDim2.new(0, 10, 0, 10)
-WeaponDrop.BackgroundColor3 = Color3.new(0.2, 0.1, 0.2)
-WeaponDrop.Text = "Arma: " .. SelectedWeapon
-WeaponDrop.MouseButton1Click:Connect(function()
-    local idx = table.find(WeaponTypes, SelectedWeapon)
-    SelectedWeapon = WeaponTypes[(idx % #WeaponTypes) + 1]
-    WeaponDrop.Text = "Arma: " .. SelectedWeapon
-end)
-
--- Dropdown de ilhas
-local Sea = 1 -- O mar atual do jogador (ajuste automaticamente baseado na posição do jogador, se quiser)
-local IslandDrop = Instance.new("TextButton", MainFrame)
-IslandDrop.Size = UDim2.new(0, 150, 0, 30)
-IslandDrop.Position = UDim2.new(0, 10, 0, 50)
-IslandDrop.BackgroundColor3 = Color3.new(0.2, 0.1, 0.2)
-IslandDrop.Text = "Teleporte Ilha"
-IslandDrop.MouseButton1Click:Connect(function()
-    -- Exemplo: teleporta para Starter Island no Mar 1
-    local cf = Islands[Sea]["Starter Island"]
-    if cf then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = cf + Vector3.new(0, 5, 0)
+    for i,v in pairs(places) do
+        local b = Instance.new("TextButton",tpGui)
+        b.Size = UDim2.new(0,190,0,25)
+        b.Position = UDim2.new(0,10,0,10+((i-1)*22))
+        b.BackgroundColor3 = Color3.fromRGB(65,65,80)
+        b.TextColor3 = Color3.new(1,1,1)
+        b.Font = Enum.Font.SourceSansBold
+        b.TextSize = 14
+        b.Text = v[1]
+        b.MouseButton1Click:Connect(function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(v[2])
+        end)
     end
+    tpGui.MouseLeave:Connect(function() tpGui:Destroy() end) -- fecha ao tirar mouse
 end)
 
--- Auto Farm Toggle
-local AutoFarm = false
-local FarmButton = Instance.new("TextButton", MainFrame)
-FarmButton.Size = UDim2.new(0, 150, 0, 30)
-FarmButton.Position = UDim2.new(0, 10, 0, 90)
-FarmButton.BackgroundColor3 = Color3.new(0.3, 0.1, 0.3)
-FarmButton.Text = "Auto Farm: OFF"
-FarmButton.MouseButton1Click:Connect(function()
-    AutoFarm = not AutoFarm
-    FarmButton.Text = "Auto Farm: "..(AutoFarm and "ON" or "OFF")
-end)
-
--- Função de Aceitar Missão e Farmar
-function GetQuestForLevel(level)
-    local selected
-    for minLevel, quest in pairs(Quests) do
-        if level >= minLevel then selected = quest end
-    end
-    return selected
-end
-
-function FastClick()
-    -- Simula clique rápido (ajuste conforme o executor usado)
-    mouse1click()
-end
-
+-- LOOP PRINCIPAL
 spawn(function()
-    while wait(1) do
-        if AutoFarm then
-            local plr = game.Players.LocalPlayer
-            local level = plr.Data.Level.Value
-            local quest = GetQuestForLevel(level)
-            if quest then
-                Sea = quest.sea
-                -- Teleporta até NPC da missão
-                plr.Character.HumanoidRootPart.CFrame = quest.npcCFrame + Vector3.new(0,5,0)
-                wait(1)
-                -- Aceita a missão
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", quest.questName, 1)
-                wait(1)
-                -- Voa até os monstros da quest
-                for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                    if mob.Name == quest.monsterName and mob.Humanoid.Health > 0 then
-                        repeat
-                            plr.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0,10,0)
-                            wait(0.2)
-                            FastClick()
-                        until mob.Humanoid.Health <= 0 or not AutoFarm
+    while wait(0.15) do
+        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then continue end
+
+        -- SAFE MODE (vai para mar ou posição alta se alguém chega perto)
+        if safeMode then
+            for _,other in pairs(game.Players:GetPlayers()) do
+                if other ~= plr and other.Character and other.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (plr.Character.HumanoidRootPart.Position - other.Character.HumanoidRootPart.Position).Magnitude
+                    if dist < 30 then
+                        plr.Character.HumanoidRootPart.CFrame = CFrame.new(0,800,0)
+                        wait(2)
                     end
                 end
             end
         end
+
+        -- AUTO BUSO HAKI
+        if autoBuso then
+            pcall(function()
+                if not plr.Character:FindFirstChild("HasBuso") then
+                    local h = plr.Character.HumanoidRootPart
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
+                end
+            end)
+        end
+
+        -- AUTO STATS (tudo em melee e defesa)
+        if autoStats then
+            pcall(function()
+                local points = plr.Data.Points.Value
+                if points >= 3 then
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint","Melee",math.floor(points/2))
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint","Defense",math.ceil(points/2))
+                end
+            end)
+        end
+
+        -- AUTO QUEST e FARM
+        if autoFarm or autoQuest then
+            local level = plr.Data.Level.Value
+            local quest, mob, mobPos
+            -- (exemplo, só funciona para 1st sea, você pode adaptar para outros)
+            if level < 10 then
+                quest = "BanditQuest1"; mob = "Bandit"; mobPos = Vector3.new(1142, 17, 1636)
+            elseif level < 30 then
+                quest = "MonkeyQuest"; mob = "Monkey"; mobPos = Vector3.new(-1601, 30, 155)
+            elseif level < 60 then
+                quest = "GorillaQuest"; mob = "Gorilla"; mobPos = Vector3.new(-1246, 6, -507)
+            elseif level < 100 then
+                quest = "PirateQuest1"; mob = "Pirate"; mobPos = Vector3.new(-1114, 13, 3930)
+            else
+                quest = "BruteQuest"; mob = "Brute"; mobPos = Vector3.new(-1140, 15, 4350)
+            end
+            if autoQuest then
+                pcall(function()
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Quest",quest,1)
+                end)
+            end
+            if autoFarm then
+                -- teleporta até mob
+                if mob and mobPos then
+                    local mobs = ws.Enemies:GetChildren()
+                    for _,enemy in pairs(mobs) do
+                        if enemy.Name == mob and enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                            plr.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0,4,0)
+                            wait(.2)
+                            -- Ataca (simula click)
+                            pcall(function()
+                                for _,v in pairs(plr.Backpack:GetChildren()) do
+                                    if v:IsA("Tool") and v:FindFirstChild("RemoteFunction") then
+                                        v.RemoteFunction:InvokeServer("Swing")
+                                    end
+                                end
+                                for _,v in pairs(plr.Character:GetChildren()) do
+                                    if v:IsA("Tool") and v:FindFirstChild("RemoteFunction") then
+                                        v.RemoteFunction:InvokeServer("Swing")
+                                    end
+                                end
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+
+        -- SPEED HACK
+        if speedHack and plr.Character:FindFirstChild("Humanoid") then
+            plr.Character.Humanoid.WalkSpeed = 120
+        elseif plr.Character:FindFirstChild("Humanoid") then
+            plr.Character.Humanoid.WalkSpeed = 16
+        end
+
     end
 end)
 
--- ESP Frutas
+-- AUTO GUN LOGIC (EXECUTA PERIODICAMENTE SE ATIVADO)
 spawn(function()
-    while wait(2) do
-        for _, fruit in pairs(workspace:GetChildren()) do
-            if fruit:IsA("Tool") and string.find(fruit.Name, "Fruit") then
-                if not fruit:FindFirstChild("FruitESP") then
-                    local bill = Instance.new("BillboardGui", fruit)
-                    bill.Name = "FruitESP"
-                    bill.Size = UDim2.new(0,100,0,50)
-                    bill.AlwaysOnTop = true
-                    local txt = Instance.new("TextLabel", bill)
-                    txt.Size = UDim2.new(1,0,1,0)
-                    txt.Text = fruit.Name.." | Ilha: (descobrir)"
-                    txt.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    txt.BackgroundTransparency = 1
+    while wait(6) do
+        if autoGun then
+            -- Tenta pelo Remote (se aberto)
+            local guns = {"Remington 870", "M9", "AK-47"}
+            local handler = Replicated:FindFirstChild("ItemHandler")
+            if handler and handler:IsA("RemoteFunction") then
+                for _,gun in ipairs(guns) do
+                    pcall(function()
+                        handler:InvokeServer(gun)
+                        wait(0.1)
+                    end)
                 end
+                wait(.4)
+            end
+            -- Tenta touch físico
+            local gunParts = {
+                Workspace.Prison_ITEMS.giver:FindFirstChild("Remington 870"),
+                Workspace.Prison_ITEMS.giver:FindFirstChild("M9"),
+                Workspace.Prison_ITEMS.giver:FindFirstChild("AK-47"),
+            }
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local oldPos = char.HumanoidRootPart.CFrame
+                for _,part in ipairs(gunParts) do
+                    if part and part:FindFirstChild("ITEMPICKUP") then
+                        char.HumanoidRootPart.CFrame = CFrame.new(part.ITEMPICKUP.Position + Vector3.new(0,2,0))
+                        wait(0.25)
+                        firetouchinterest(char.HumanoidRootPart, part.ITEMPICKUP, 0)
+                        wait(0.15)
+                        firetouchinterest(char.HumanoidRootPart, part.ITEMPICKUP, 1)
+                        wait(0.15)
+                    end
+                end
+                char.HumanoidRootPart.CFrame = oldPos
             end
         end
     end
 end)
 
--- ESP Jogadores
-spawn(function()
-    while wait(1) do
-        for _, v in pairs(game.Players:GetPlayers()) do
-            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Head") then
-                if not v.Character.Head:FindFirstChild("PlayerESP") then
-                    local bill = Instance.new("BillboardGui", v.Character.Head)
-                    bill.Name = "PlayerESP"
-                    bill.Size = UDim2.new(0,150,0,50)
-                    bill.AlwaysOnTop = true
-                    local txt = Instance.new("TextLabel", bill)
-                    txt.Size = UDim2.new(1,0,1,0)
-                    local dist = math.floor((v.Character.Head.Position - game.Players.LocalPlayer.Character.Head.Position).Magnitude)
-                    local hp = v.Character:FindFirstChildOfClass("Humanoid") and v.Character:FindFirstChildOfClass("Humanoid").Health or 0
-                    txt.Text = v.Name.." | Vida: ["..math.floor(hp).."] | Dist: "..dist
-                    txt.TextColor3 = Color3.new(1,1,1)
-                    txt.BackgroundTransparency = 1
-                end
-            end
-        end
-    end
+-- BOTÕES
+btnNome.MouseButton1Click:Connect(function()
+    showNome = not showNome
+    btnNome.Text = "ESP Nome: " .. (showNome and "ON" or "OFF")
+end)
+btnCaixa.MouseButton1Click:Connect(function()
+    showCaixa = not showCaixa
+    btnCaixa.Text = "ESP Caixa: " .. (showCaixa and "ON" or "OFF")
+end)
+btnLinha.MouseButton1Click:Connect(function()
+    showLinha = not showLinha
+    btnLinha.Text = "ESP Linha: " .. (showLinha and "ON" or "OFF")
+end)
+btnTeam.MouseButton1Click:Connect(function()
+    teamCheck = not teamCheck
+    btnTeam.Text = "Team Check: " .. (teamCheck and "ON" or "OFF")
+end)
+btnAutoKill.MouseButton1Click:Connect(function()
+    autoKill = not autoKill
+    btnAutoKill.Text = "Auto Kill: " .. (autoKill and "ON" or "OFF")
+end)
+btnAutoArrest.MouseButton1Click:Connect(function()
+    autoArrest = not autoArrest
+    btnAutoArrest.Text = "Auto Arrest: " .. (autoArrest and "ON" or "OFF")
+end)
+btnAutoGun.MouseButton1Click:Connect(function()
+    autoGun = not autoGun
+    btnAutoGun.Text = "Auto Gun: " .. (autoGun and "ON" or "OFF")
 end)
 
--- Teleporte de Mar
-local TeleportSea = function(sea)
-    -- Teleporta para a primeira ilha do mar escolhido
-    local cf = next(Islands[sea])
-    if cf then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Islands[sea][cf] + Vector3.new(0,5,0)
-    end
-end
-
--- Adapte/expanda conforme desejar!
+Players.PlayerRemoving:Connect(function(plr)
+    removeDrawingESP(plr)
+end)

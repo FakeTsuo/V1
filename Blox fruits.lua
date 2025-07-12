@@ -1,320 +1,424 @@
 --[[
-BLOX FRUITS MOBILE - SCRIPT OP ALL-IN-ONE
-By Copilot (2024)
-Compatível com Delta Mobile, Hydrogen, Arceus X, Codex, etc
-]]--
+    Blox Fruits Mobile OP Script com Custom Hub GUI Estilizada (inspirada, não idêntica ao Tsuo Hub)
+    Todas funções organizadas em suas tabs!
+    Use por sua conta e risco!
+--]]
 
--- Proteção anti-crash
-pcall(function() game:GetService("CoreGui")["BF_OP_GUI"]:Destroy() end)
+-- Tema e configurações
+local Theme = {
+    MainColor = Color3.fromRGB(40, 40, 80),
+    AccentColor = Color3.fromRGB(70, 180, 255),
+    ButtonColor = Color3.fromRGB(30, 160, 110),
+    ButtonTextColor = Color3.fromRGB(255,255,255),
+    TabColor = Color3.fromRGB(20, 20, 60),
+    TabTextColor = Color3.fromRGB(200, 200, 230),
+    BorderRadius = UDim.new(0,12),
+    ShadowColor = Color3.fromRGB(0,0,0),
+}
 
-local plr = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local Replicated = game:GetService("ReplicatedStorage")
-local ws = game:GetService("Workspace")
-
--- GUI PRINCIPAL
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "BF_OP_GUI"
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0,270,0,485)
-frame.Position = UDim2.new(0,10,0,130)
-frame.BackgroundColor3 = Color3.fromRGB(30,30,40)
-frame.Active = true
-frame.Draggable = true
-
-local function makeBtn(txt, y)
-    local b = Instance.new("TextButton")
-    b.Parent = frame
-    b.Size = UDim2.new(0,240,0,34)
-    b.Position = UDim2.new(0,15,0,y)
-    b.BackgroundColor3 = Color3.fromRGB(44,44,54)
-    b.TextColor3 = Color3.new(1,1,1)
-    b.Font = Enum.Font.SourceSansBold
-    b.TextSize = 16
-    b.Text = txt
-    return b
+-- Remove GUIs antigos
+if game.CoreGui:FindFirstChild("CustomHub") then
+    game.CoreGui.CustomHub:Destroy()
 end
 
-local btnAutoFarm = makeBtn("Auto Farm: OFF",10)
-local btnAutoQuest = makeBtn("Auto Quest: OFF",54)
-local btnAutoStats = makeBtn("Auto Stats: OFF",98)
-local btnBuso = makeBtn("Auto Buso Haki: OFF",142)
-local btnTP = makeBtn("Teleport GUI",186)
-local btnSpeed = makeBtn("Speed Hack: OFF",230)
-local btnFPS = makeBtn("FPS Boost",274)
-local btnSafe = makeBtn("Safe Mode: OFF",318)
-local lblstatus = Instance.new("TextLabel", frame)
-lblstatus.Size = UDim2.new(0,240,0,32)
-lblstatus.Position = UDim2.new(0,15,0,370)
-lblstatus.BackgroundTransparency = 1
-lblstatus.Text = "Blox Fruits Mobile Script - Copilot"
-lblstatus.TextColor3 = Color3.new(1,1,1)
-lblstatus.Font = Enum.Font.SourceSansBold
-lblstatus.TextSize = 14
+-- GUI base
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "CustomHub"
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
--- ESTADOS
-local autoFarm, autoQuest, autoStats, autoBuso, speedHack, safeMode = false, false, false, false, false, false
+local Main = Instance.new("Frame", ScreenGui)
+Main.Name = "MainFrame"
+Main.Size = UDim2.new(0, 340, 0, 420)
+Main.Position = UDim2.new(0.5, -170, 0.5, -210)
+Main.BackgroundColor3 = Theme.MainColor
+Main.BorderSizePixel = 0
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
+Main.Active = true
+Main.Draggable = true
 
--- FUNÇÕES OP
+local UICorner = Instance.new("UICorner", Main)
+UICorner.CornerRadius = Theme.BorderRadius
 
--- FPS BOOST
-btnFPS.MouseButton1Click:Connect(function()
-    setfpscap = setfpscap or function() end
-    setfpscap(30)
-    for _,v in pairs(workspace:GetDescendants()) do
-        if v:IsA("BasePart") or v:IsA("Decal") then pcall(function() v.Material = Enum.Material.SmoothPlastic v.Reflectance = 0 end) end
-        if v:IsA("ParticleEmitter") or v:IsA("Trail") then v.Enabled = false end
+local DropShadow = Instance.new("ImageLabel", Main)
+DropShadow.Image = "rbxassetid://1316045217"
+DropShadow.Size = UDim2.new(1,28,1,28)
+DropShadow.Position = UDim2.new(0,-14,0,-14)
+DropShadow.BackgroundTransparency = 1
+DropShadow.ImageTransparency = 0.6
+DropShadow.ZIndex = 0
+DropShadow.ScaleType = Enum.ScaleType.Slice
+DropShadow.SliceCenter = Rect.new(10,10,118,118)
+DropShadow.ImageColor3 = Theme.ShadowColor
+
+-- Título estilizado
+local Title = Instance.new("TextLabel", Main)
+Title.Text = "Custom Hub"
+Title.Size = UDim2.new(1,0,0,44)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Theme.AccentColor
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 26
+Title.TextStrokeTransparency = 0.7
+Title.TextXAlignment = Enum.TextXAlignment.Center
+
+local Line = Instance.new("Frame", Main)
+Line.BackgroundColor3 = Theme.AccentColor
+Line.Size = UDim2.new(1, -32, 0, 2)
+Line.Position = UDim2.new(0, 16, 0, 44)
+
+-- Tabs
+local TabBar = Instance.new("Frame", Main)
+TabBar.BackgroundColor3 = Theme.TabColor
+TabBar.Size = UDim2.new(1, -32, 0, 38)
+TabBar.Position = UDim2.new(0,16,0,52)
+TabBar.BorderSizePixel = 0
+local TabLayout = Instance.new("UIListLayout", TabBar)
+TabLayout.FillDirection = Enum.FillDirection.Horizontal
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Padding = UDim.new(0,8)
+
+-- Função de criar Tabs
+local Tabs = {}
+local function CreateTab(tabname)
+    local btn = Instance.new("TextButton", TabBar)
+    btn.Text = tabname
+    btn.Size = UDim2.new(0, 100, 1, 0)
+    btn.BackgroundColor3 = Theme.TabColor
+    btn.TextColor3 = Theme.TabTextColor
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.BorderSizePixel = 0
+    btn.AutoButtonColor = false
+
+    local tabFrame = Instance.new("Frame", Main)
+    tabFrame.Size = UDim2.new(1, -32, 1, -102)
+    tabFrame.Position = UDim2.new(0,16,0,100)
+    tabFrame.BackgroundTransparency = 1
+    tabFrame.Visible = false
+
+    Tabs[tabname] = {Button = btn, Frame = tabFrame}
+end
+
+-- Criando as Tabs
+CreateTab("Farming")
+CreateTab("Player")
+CreateTab("Teleports")
+CreateTab("Visual")
+
+-- Função de trocar tab (com animação simples)
+local currentTab = nil
+local TweenService = game:GetService("TweenService")
+local function SwitchTab(tabname)
+    for name, v in pairs(Tabs) do
+        v.Frame.Visible = false
+        v.Button.BackgroundColor3 = Theme.TabColor
+        v.Button.TextColor3 = Theme.TabTextColor
     end
-    game:GetService("Lighting").FogEnd = 1e10
-    game:GetService("Lighting").Brightness = 1
-    game:GetService("Lighting").GlobalShadows = false
-    game:GetService("Lighting").ClockTime = 14
-    lblstatus.Text = "FPS Boost Ativado!"
-end)
+    local tab = Tabs[tabname]
+    tab.Frame.Visible = true
+    TweenService:Create(tab.Button,TweenInfo.new(0.2),{BackgroundColor3=Theme.AccentColor,TextColor3=Theme.MainColor}):Play()
+    currentTab = tabname
+end
 
--- SPEED HACK
-btnSpeed.MouseButton1Click:Connect(function()
-    speedHack = not speedHack
-    btnSpeed.Text = "Speed Hack: " .. (speedHack and "ON" or "OFF")
-    if speedHack then
-        plr.Character.Humanoid.WalkSpeed = 120
+-- Botões das Tabs
+for name, v in pairs(Tabs) do
+    v.Button.MouseButton1Click:Connect(function()
+        SwitchTab(name)
+    end)
+end
+
+-- Abre primeira tab
+SwitchTab("Farming")
+
+-------------------------------
+-- Funções OP para Blox Fruits
+-------------------------------
+
+-- Variáveis globais
+_G.AutoFarm = false
+_G.FruitSniper = false
+
+-- Função de Auto Farm (Farme automático de inimigos)
+function AutoFarm()
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character.Humanoid
+    while _G.AutoFarm do
+        for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
+            if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                repeat
+                    humanoid:MoveTo(v.HumanoidRootPart.Position)
+                    wait(0.2)
+                    -- Ataque
+                    game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+                    wait(0.2)
+                until v.Humanoid.Health <= 0 or not _G.AutoFarm
+            end
+        end
+        wait(1)
+    end
+end
+
+-- Função de Auto Coletar Frutas (Fruit Sniper)
+function AutoFruitSniper()
+    while _G.FruitSniper do
+        for i, v in pairs(game.Workspace:GetChildren()) do
+            if v.Name == "Fruit" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                wait(0.2)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v, 0)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v, 1)
+            end
+        end
+        wait(1)
+    end
+end
+
+-- Função de Teleporte
+function TeleportTo(Position)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Position)
+end
+
+-- God Mode (invencível contra NPCs simples)
+function GodMode()
+    local player = game.Players.LocalPlayer
+    player.Character.Humanoid.Name = "GodHumanoid"
+end
+
+-- Speed Hack
+function SetSpeed(value)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+end
+
+-- Super Jump
+function SetJumpPower(value)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+end
+
+-------------------------------
+-- Conteúdo das Tabs
+-------------------------------
+
+-- Tab FARMING (Auto Farm & Fruit Sniper)
+local FarmLabel = Instance.new("TextLabel", Tabs["Farming"].Frame)
+FarmLabel.Text = "Funções de Farming"
+FarmLabel.Size = UDim2.new(1,0,0,36)
+FarmLabel.Position = UDim2.new(0,0,0,8)
+FarmLabel.BackgroundTransparency = 1
+FarmLabel.TextColor3 = Theme.AccentColor
+FarmLabel.Font = Enum.Font.GothamBold
+FarmLabel.TextSize = 22
+FarmLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Botão Auto Farm
+local FarmBtn = Instance.new("TextButton", Tabs["Farming"].Frame)
+FarmBtn.Text = "Ativar Auto Farm"
+FarmBtn.Size = UDim2.new(0,180,0,36)
+FarmBtn.Position = UDim2.new(0,10,0,50)
+FarmBtn.BackgroundColor3 = Theme.ButtonColor
+FarmBtn.TextColor3 = Theme.ButtonTextColor
+FarmBtn.Font = Enum.Font.GothamSemibold
+FarmBtn.TextSize = 18
+FarmBtn.BorderSizePixel = 0
+local btnCorner1 = Instance.new("UICorner", FarmBtn)
+btnCorner1.CornerRadius = Theme.BorderRadius
+
+FarmBtn.MouseButton1Click:Connect(function()
+    _G.AutoFarm = not _G.AutoFarm
+    if _G.AutoFarm then
+        FarmBtn.Text = "Parar Auto Farm"
+        FarmBtn.BackgroundColor3 = Theme.AccentColor
+        spawn(AutoFarm)
     else
-        plr.Character.Humanoid.WalkSpeed = 16
+        FarmBtn.Text = "Ativar Auto Farm"
+        FarmBtn.BackgroundColor3 = Theme.ButtonColor
     end
 end)
 
--- SAFE MODE
-btnSafe.MouseButton1Click:Connect(function()
-    safeMode = not safeMode
-    btnSafe.Text = "Safe Mode: " .. (safeMode and "ON" or "OFF")
-end)
+-- Botão Fruit Sniper
+local FruitBtn = Instance.new("TextButton", Tabs["Farming"].Frame)
+FruitBtn.Text = "Ativar Fruit Sniper"
+FruitBtn.Size = UDim2.new(0,180,0,36)
+FruitBtn.Position = UDim2.new(0,10,0,100)
+FruitBtn.BackgroundColor3 = Theme.ButtonColor
+FruitBtn.TextColor3 = Theme.ButtonTextColor
+FruitBtn.Font = Enum.Font.GothamSemibold
+FruitBtn.TextSize = 18
+FruitBtn.BorderSizePixel = 0
+local btnCorner2 = Instance.new("UICorner", FruitBtn)
+btnCorner2.CornerRadius = Theme.BorderRadius
 
--- AUTO BUSO HAKI
-btnBuso.MouseButton1Click:Connect(function()
-    autoBuso = not autoBuso
-    btnBuso.Text = "Auto Buso Haki: " .. (autoBuso and "ON" or "OFF")
-end)
-
--- AUTO STATS
-btnAutoStats.MouseButton1Click:Connect(function()
-    autoStats = not autoStats
-    btnAutoStats.Text = "Auto Stats: " .. (autoStats and "ON" or "OFF")
-end)
-
--- AUTO QUEST
-btnAutoQuest.MouseButton1Click:Connect(function()
-    autoQuest = not autoQuest
-    btnAutoQuest.Text = "Auto Quest: " .. (autoQuest and "ON" or "OFF")
-end)
-
--- AUTO FARM
-btnAutoFarm.MouseButton1Click:Connect(function()
-    autoFarm = not autoFarm
-    btnAutoFarm.Text = "Auto Farm: " .. (autoFarm and "ON" or "OFF")
-end)
-
--- TELEPORT GUI
-btnTP.MouseButton1Click:Connect(function()
-    local tpGui = Instance.new("Frame",gui)
-    tpGui.Size = UDim2.new(0,210,0,310)
-    tpGui.Position = UDim2.new(0,300,0,140)
-    tpGui.BackgroundColor3 = Color3.fromRGB(45,45,55)
-    tpGui.Draggable = true
-    tpGui.Active = true
-    tpGui.Name = "TPFRAME"
-    local places = {
-        {"Starter Island",Vector3.new(-260, 7, 388)}, {"Jungle",Vector3.new(-1337, 11, 495)}, 
-        {"Pirate Village",Vector3.new(-1122, 5, 3877)}, {"Desert",Vector3.new(1094, 15, 4192)},
-        {"Middle",Vector3.new(-521, 8, 4168)}, {"Sky",Vector3.new(-4956, 295, -2847)},
-        {"Frozen Village",Vector3.new(1122, 7, -1426)}, {"Marine Ford",Vector3.new(-4505, 20, 4260)},
-        {"Colosseum",Vector3.new(-1428, 7, -3014)}, {"Prison",Vector3.new(5278, 38, 474)},
-        {"Magma",Vector3.new(-5585, 15, 8027)}, {"Underwater",Vector3.new(61163, 5, 1569)},
-        {"Fountain City",Vector3.new(5251, 38, 4012)}
-    }
-    for i,v in pairs(places) do
-        local b = Instance.new("TextButton",tpGui)
-        b.Size = UDim2.new(0,190,0,25)
-        b.Position = UDim2.new(0,10,0,10+((i-1)*22))
-        b.BackgroundColor3 = Color3.fromRGB(65,65,80)
-        b.TextColor3 = Color3.new(1,1,1)
-        b.Font = Enum.Font.SourceSansBold
-        b.TextSize = 14
-        b.Text = v[1]
-        b.MouseButton1Click:Connect(function()
-            plr.Character.HumanoidRootPart.CFrame = CFrame.new(v[2])
-        end)
-    end
-    tpGui.MouseLeave:Connect(function() tpGui:Destroy() end) -- fecha ao tirar mouse
-end)
-
--- LOOP PRINCIPAL
-spawn(function()
-    while wait(0.15) do
-        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then continue end
-
-        -- SAFE MODE (vai para mar ou posição alta se alguém chega perto)
-        if safeMode then
-            for _,other in pairs(game.Players:GetPlayers()) do
-                if other ~= plr and other.Character and other.Character:FindFirstChild("HumanoidRootPart") then
-                    local dist = (plr.Character.HumanoidRootPart.Position - other.Character.HumanoidRootPart.Position).Magnitude
-                    if dist < 30 then
-                        plr.Character.HumanoidRootPart.CFrame = CFrame.new(0,800,0)
-                        wait(2)
-                    end
-                end
-            end
-        end
-
-        -- AUTO BUSO HAKI
-        if autoBuso then
-            pcall(function()
-                if not plr.Character:FindFirstChild("HasBuso") then
-                    local h = plr.Character.HumanoidRootPart
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
-                end
-            end)
-        end
-
-        -- AUTO STATS (tudo em melee e defesa)
-        if autoStats then
-            pcall(function()
-                local points = plr.Data.Points.Value
-                if points >= 3 then
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint","Melee",math.floor(points/2))
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint","Defense",math.ceil(points/2))
-                end
-            end)
-        end
-
-        -- AUTO QUEST e FARM
-        if autoFarm or autoQuest then
-            local level = plr.Data.Level.Value
-            local quest, mob, mobPos
-            -- (exemplo, só funciona para 1st sea, você pode adaptar para outros)
-            if level < 10 then
-                quest = "BanditQuest1"; mob = "Bandit"; mobPos = Vector3.new(1142, 17, 1636)
-            elseif level < 30 then
-                quest = "MonkeyQuest"; mob = "Monkey"; mobPos = Vector3.new(-1601, 30, 155)
-            elseif level < 60 then
-                quest = "GorillaQuest"; mob = "Gorilla"; mobPos = Vector3.new(-1246, 6, -507)
-            elseif level < 100 then
-                quest = "PirateQuest1"; mob = "Pirate"; mobPos = Vector3.new(-1114, 13, 3930)
-            else
-                quest = "BruteQuest"; mob = "Brute"; mobPos = Vector3.new(-1140, 15, 4350)
-            end
-            if autoQuest then
-                pcall(function()
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Quest",quest,1)
-                end)
-            end
-            if autoFarm then
-                -- teleporta até mob
-                if mob and mobPos then
-                    local mobs = ws.Enemies:GetChildren()
-                    for _,enemy in pairs(mobs) do
-                        if enemy.Name == mob and enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
-                            plr.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0,4,0)
-                            wait(.2)
-                            -- Ataca (simula click)
-                            pcall(function()
-                                for _,v in pairs(plr.Backpack:GetChildren()) do
-                                    if v:IsA("Tool") and v:FindFirstChild("RemoteFunction") then
-                                        v.RemoteFunction:InvokeServer("Swing")
-                                    end
-                                end
-                                for _,v in pairs(plr.Character:GetChildren()) do
-                                    if v:IsA("Tool") and v:FindFirstChild("RemoteFunction") then
-                                        v.RemoteFunction:InvokeServer("Swing")
-                                    end
-                                end
-                            end)
-                        end
-                    end
-                end
-            end
-        end
-
-        -- SPEED HACK
-        if speedHack and plr.Character:FindFirstChild("Humanoid") then
-            plr.Character.Humanoid.WalkSpeed = 120
-        elseif plr.Character:FindFirstChild("Humanoid") then
-            plr.Character.Humanoid.WalkSpeed = 16
-        end
-
+FruitBtn.MouseButton1Click:Connect(function()
+    _G.FruitSniper = not _G.FruitSniper
+    if _G.FruitSniper then
+        FruitBtn.Text = "Parar Fruit Sniper"
+        FruitBtn.BackgroundColor3 = Theme.AccentColor
+        spawn(AutoFruitSniper)
+    else
+        FruitBtn.Text = "Ativar Fruit Sniper"
+        FruitBtn.BackgroundColor3 = Theme.ButtonColor
     end
 end)
 
--- AUTO GUN LOGIC (EXECUTA PERIODICAMENTE SE ATIVADO)
-spawn(function()
-    while wait(6) do
-        if autoGun then
-            -- Tenta pelo Remote (se aberto)
-            local guns = {"Remington 870", "M9", "AK-47"}
-            local handler = Replicated:FindFirstChild("ItemHandler")
-            if handler and handler:IsA("RemoteFunction") then
-                for _,gun in ipairs(guns) do
-                    pcall(function()
-                        handler:InvokeServer(gun)
-                        wait(0.1)
-                    end)
-                end
-                wait(.4)
-            end
-            -- Tenta touch físico
-            local gunParts = {
-                Workspace.Prison_ITEMS.giver:FindFirstChild("Remington 870"),
-                Workspace.Prison_ITEMS.giver:FindFirstChild("M9"),
-                Workspace.Prison_ITEMS.giver:FindFirstChild("AK-47"),
-            }
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local oldPos = char.HumanoidRootPart.CFrame
-                for _,part in ipairs(gunParts) do
-                    if part and part:FindFirstChild("ITEMPICKUP") then
-                        char.HumanoidRootPart.CFrame = CFrame.new(part.ITEMPICKUP.Position + Vector3.new(0,2,0))
-                        wait(0.25)
-                        firetouchinterest(char.HumanoidRootPart, part.ITEMPICKUP, 0)
-                        wait(0.15)
-                        firetouchinterest(char.HumanoidRootPart, part.ITEMPICKUP, 1)
-                        wait(0.15)
-                    end
-                end
-                char.HumanoidRootPart.CFrame = oldPos
-            end
-        end
-    end
+-- Tab PLAYER (GodMode, Speed, Jump)
+local PlayerLabel = Instance.new("TextLabel", Tabs["Player"].Frame)
+PlayerLabel.Text = "Funções de Player"
+PlayerLabel.Size = UDim2.new(1,0,0,36)
+PlayerLabel.Position = UDim2.new(0,0,0,8)
+PlayerLabel.BackgroundTransparency = 1
+PlayerLabel.TextColor3 = Theme.AccentColor
+PlayerLabel.Font = Enum.Font.GothamBold
+PlayerLabel.TextSize = 22
+PlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Botão God Mode
+local GodBtn = Instance.new("TextButton", Tabs["Player"].Frame)
+GodBtn.Text = "Ativar GodMode"
+GodBtn.Size = UDim2.new(0,140,0,36)
+GodBtn.Position = UDim2.new(0,10,0,50)
+GodBtn.BackgroundColor3 = Theme.ButtonColor
+GodBtn.TextColor3 = Theme.ButtonTextColor
+GodBtn.Font = Enum.Font.GothamSemibold
+GodBtn.TextSize = 18
+GodBtn.BorderSizePixel = 0
+local btnCorner3 = Instance.new("UICorner", GodBtn)
+btnCorner3.CornerRadius = Theme.BorderRadius
+
+GodBtn.MouseButton1Click:Connect(function()
+    GodMode()
+    GodBtn.Text = "GodMode ON"
+    GodBtn.BackgroundColor3 = Theme.AccentColor
+    wait(2)
+    GodBtn.Text = "Ativar GodMode"
+    GodBtn.BackgroundColor3 = Theme.ButtonColor
 end)
 
--- BOTÕES
-btnNome.MouseButton1Click:Connect(function()
-    showNome = not showNome
-    btnNome.Text = "ESP Nome: " .. (showNome and "ON" or "OFF")
-end)
-btnCaixa.MouseButton1Click:Connect(function()
-    showCaixa = not showCaixa
-    btnCaixa.Text = "ESP Caixa: " .. (showCaixa and "ON" or "OFF")
-end)
-btnLinha.MouseButton1Click:Connect(function()
-    showLinha = not showLinha
-    btnLinha.Text = "ESP Linha: " .. (showLinha and "ON" or "OFF")
-end)
-btnTeam.MouseButton1Click:Connect(function()
-    teamCheck = not teamCheck
-    btnTeam.Text = "Team Check: " .. (teamCheck and "ON" or "OFF")
-end)
-btnAutoKill.MouseButton1Click:Connect(function()
-    autoKill = not autoKill
-    btnAutoKill.Text = "Auto Kill: " .. (autoKill and "ON" or "OFF")
-end)
-btnAutoArrest.MouseButton1Click:Connect(function()
-    autoArrest = not autoArrest
-    btnAutoArrest.Text = "Auto Arrest: " .. (autoArrest and "ON" or "OFF")
-end)
-btnAutoGun.MouseButton1Click:Connect(function()
-    autoGun = not autoGun
-    btnAutoGun.Text = "Auto Gun: " .. (autoGun and "ON" or "OFF")
+-- Botão Speed Hack
+local SpeedBtn = Instance.new("TextButton", Tabs["Player"].Frame)
+SpeedBtn.Text = "Speed x3"
+SpeedBtn.Size = UDim2.new(0,120,0,36)
+SpeedBtn.Position = UDim2.new(0,160,0,50)
+SpeedBtn.BackgroundColor3 = Theme.ButtonColor
+SpeedBtn.TextColor3 = Theme.ButtonTextColor
+SpeedBtn.Font = Enum.Font.GothamSemibold
+SpeedBtn.TextSize = 18
+SpeedBtn.BorderSizePixel = 0
+local btnCorner4 = Instance.new("UICorner", SpeedBtn)
+btnCorner4.CornerRadius = Theme.BorderRadius
+
+SpeedBtn.MouseButton1Click:Connect(function()
+    SetSpeed(48)
+    SpeedBtn.Text = "Speed ON"
+    SpeedBtn.BackgroundColor3 = Theme.AccentColor
+    wait(2)
+    SpeedBtn.Text = "Speed x3"
+    SpeedBtn.BackgroundColor3 = Theme.ButtonColor
 end)
 
-Players.PlayerRemoving:Connect(function(plr)
-    removeDrawingESP(plr)
+-- Botão Super Jump
+local JumpBtn = Instance.new("TextButton", Tabs["Player"].Frame)
+JumpBtn.Text = "Super Jump"
+JumpBtn.Size = UDim2.new(0,120,0,36)
+JumpBtn.Position = UDim2.new(0,10,0,100)
+JumpBtn.BackgroundColor3 = Theme.ButtonColor
+JumpBtn.TextColor3 = Theme.ButtonTextColor
+JumpBtn.Font = Enum.Font.GothamSemibold
+JumpBtn.TextSize = 18
+JumpBtn.BorderSizePixel = 0
+local btnCorner5 = Instance.new("UICorner", JumpBtn)
+btnCorner5.CornerRadius = Theme.BorderRadius
+
+JumpBtn.MouseButton1Click:Connect(function()
+    SetJumpPower(200)
+    JumpBtn.Text = "Jump ON"
+    JumpBtn.BackgroundColor3 = Theme.AccentColor
+    wait(2)
+    JumpBtn.Text = "Super Jump"
+    JumpBtn.BackgroundColor3 = Theme.ButtonColor
 end)
+
+-- Tab TELEPORTS (Teleporte Personalizado)
+local TeleportLabel = Instance.new("TextLabel", Tabs["Teleports"].Frame)
+TeleportLabel.Text = "Teleporte Rápido"
+TeleportLabel.Size = UDim2.new(1,0,0,36)
+TeleportLabel.Position = UDim2.new(0,0,0,8)
+TeleportLabel.BackgroundTransparency = 1
+TeleportLabel.TextColor3 = Theme.AccentColor
+TeleportLabel.Font = Enum.Font.GothamBold
+TeleportLabel.TextSize = 22
+TeleportLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Exemplo de teleporte para locais populares (adicione mais caso deseje)
+local Locais = {
+    {"Start Island", Vector3.new(1061, 17, 1427)},
+    {"Jungle", Vector3.new(-1217, 11, 341)},
+    {"Marine", Vector3.new(-2602, 40, 2000)},
+    {"Desert", Vector3.new(1158, 41, 4350)},
+}
+
+local y = 50
+for _, data in ipairs(Locais) do
+    local btn = Instance.new("TextButton", Tabs["Teleports"].Frame)
+    btn.Text = data[1]
+    btn.Size = UDim2.new(0,170,0,36)
+    btn.Position = UDim2.new(0,10,0,y)
+    btn.BackgroundColor3 = Theme.ButtonColor
+    btn.TextColor3 = Theme.ButtonTextColor
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 18
+    btn.BorderSizePixel = 0
+    local bcorner = Instance.new("UICorner", btn)
+    bcorner.CornerRadius = Theme.BorderRadius
+    btn.MouseButton1Click:Connect(function()
+        TeleportTo(data[2])
+        btn.Text = "Teleportado!"
+        btn.BackgroundColor3 = Theme.AccentColor
+        wait(1)
+        btn.Text = data[1]
+        btn.BackgroundColor3 = Theme.ButtonColor
+    end)
+    y = y + 46
+end
+
+-- Tab VISUAL (decorativa ou para futuras funções)
+local VisualLabel = Instance.new("TextLabel", Tabs["Visual"].Frame)
+VisualLabel.Text = "Custom Hub Visual"
+VisualLabel.Size = UDim2.new(1,0,0,36)
+VisualLabel.Position = UDim2.new(0,0,0,8)
+VisualLabel.BackgroundTransparency = 1
+VisualLabel.TextColor3 = Theme.AccentColor
+VisualLabel.Font = Enum.Font.GothamBold
+VisualLabel.TextSize = 22
+VisualLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local Info = Instance.new("TextLabel", Tabs["Visual"].Frame)
+Info.Text = "GUI inspirada em Tsuo Hub\nPersonalize aqui efeitos visuais ou informações!"
+Info.Size = UDim2.new(1,-20,0,60)
+Info.Position = UDim2.new(0,10,0,50)
+Info.BackgroundTransparency = 1
+Info.TextColor3 = Theme.TabTextColor
+Info.Font = Enum.Font.Gotham
+Info.TextSize = 16
+Info.TextXAlignment = Enum.TextXAlignment.Left
+
+-------------------------------
+-- Fechar GUI
+-------------------------------
+local CloseBtn = Instance.new("TextButton", Main)
+CloseBtn.Text = "×"
+CloseBtn.Size = UDim2.new(0,32,0,32)
+CloseBtn.Position = UDim2.new(1,-44,0,12)
+CloseBtn.BackgroundColor3 = Theme.AccentColor
+CloseBtn.TextColor3 = Theme.MainColor
+CloseBtn.Font = Enum.Font.GothamBlack
+CloseBtn.TextSize = 28
+CloseBtn.BorderSizePixel = 0
+local closeCorner = Instance.new("UICorner", CloseBtn)
+closeCorner.CornerRadius = UDim.new(1,0)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- [ Fim do Script. ]

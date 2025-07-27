@@ -1,148 +1,44 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local Window = Rayfield:CreateWindow({
-   Name = "Rayfield Example Window",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Rayfield Interface Suite",
-   LoadingSubtitle = "by Sirius",
-   ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+-- Cria o botão flutuante na tela
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 
-   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+local originalSpeed = humanoid.WalkSpeed
+local boostedSpeed = 75
+local duration = 30
 
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+-- Interface
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SpeedBoostUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 120, 0, 50)
+button.Position = UDim2.new(0.5, -60, 0.85, 0) -- Centro inferior da tela
+button.Text = "Velocidade x3"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.Font = Enum.Font.SourceSansBold
+button.Parent = screenGui
 
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
+-- Controle de uso
+local isBoostActive = false
 
-   KeySystem = false, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
-})
-local Tab = Window:CreateTab("Farm", 4483362458) -- Title, Image
-local Dropdown = Tab:CreateDropdown({
-   Name = "Weapon:",
-   Options = {"Melee","Sword","Gun","Blox Fruit"},
-   CurrentOption = {"None"},
-   MultipleOptions = false,
-   Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Options)
-   -- The function that takes place when the selected option is changed
-   -- The variable (Options) is a table of strings for the current selected options
-   end,
-})
-local Toggle = Tab:CreateToggle({
-   Name = "Auto Farm Level",
-   CurrentValue = false,
-   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-local function getQuestPorLevel(level)
-    for _,q in pairs(Quests) do
-        if level >= q[1] and level <= q[2] then
-            return q
-        end
-    end
-    return nil
-end
+button.MouseButton1Click:Connect(function()
+	if isBoostActive then return end
+	
+	isBoostActive = true
+	button.Text = "Acelerando!"
+	humanoid.WalkSpeed = boostedSpeed
 
--- Função para voar até posição
-local function voarAte(pos)
-    local char = game.Players.LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = CFrame.new(pos)
-    end
-end
-
--- Função para pegar quest
-local function pegarQuest(questName)
-    for _,npc in pairs(workspace.NPCs:GetChildren()) do
-        if npc.Name == questName then
-            voarAte(npc.Position)
-            wait(1)
-            fireclickdetector(npc.ClickDetector)
-            wait(1)
-        end
-    end
-end
-
--- Função para encontrar e atacar NPC
-local function atacarNPC(npcName)
-    local arma = game.Players.LocalPlayer.Backpack:FindFirstChild(armaSelecionada)
-    if arma then
-        arma.Parent = game.Players.LocalPlayer.Character
-    end
-    for _,npc in pairs(workspace.Enemies:GetChildren()) do
-        if npc.Name == npcName and npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
-            voarAte(npc.HumanoidRootPart.Position + Vector3.new(0,3,0))
-            repeat
-                npc.Humanoid.Health = npc.Humanoid.Health - 20 -- Simula dano
-                arma:Activate() -- Simula clique
-                wait(0.2)
-            until npc.Humanoid.Health <= 0
-        end
-    end
-end
-
--- Loop principal
-while wait(1) do
-    local level = game.Players.LocalPlayer.Data.Level.Value
-    local quest = getQuestPorLevel(level)
-    if quest then
-        pegarQuest(quest[3])
-        atacarNPC(quest[4])
-    else
-        print("Level fora da tabela, atualize o script!")
-    end
-end
-   -- The variable (Value) is a boolean on whether the toggle is true or false
-   end,
-})
-local Toggle = Tab:CreateToggle({
-   Name = "Farm Nearest Mobs",
-   CurrentValue = false,
-   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   -- The function that takes place when the toggle is pressed
-   -- The variable (Value) is a boolean on whether the toggle is true or false
-   end,
-})
-local Toggle = Tab:CreateToggle({
-   Name = "Farm All Spawn Bosses",
-   CurrentValue = false,
-   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   -- The function that takes place when the toggle is pressed
-   -- The variable (Value) is a boolean on whether the toggle is true or false
-   end,
-})
-
-
-
-
-local Tab = Window:CreateTab("Status", 4483362458) -- Title, Image
-
-
-
-
-local Tab = Window:CreateTab("Fruit", 4483362458) -- Title, Image
-
-
-
-
-local Tab = Window:CreateTab("Misc", 4483362458) -- Title, Image
+	task.delay(duration, function()
+		-- Garante que o personagem ainda exista
+		if humanoid and humanoid.Parent then
+			humanoid.WalkSpeed = originalSpeed
+		end
+		button.Text = "Velocidade x3"
+		isBoostActive = false
+	end)
+end)
